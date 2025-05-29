@@ -1,0 +1,35 @@
+# Python specific ignores
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/ # For Jupyter notebooks
+
+# Environment variables
+.env
+.venv/ # If you use venv (though you're using Conda, good to include)
+
+# Conda specific ignores
+# For generated Conda environments, usually they are outside the project dir
+# If you have a local env created *inside* the project dir (not recommended), add it here:
+# my_project_env/
+
+# Data files (crucial for RAG projects!)
+data/raw/             # Don't commit raw PDFs
+data/processed/       # Don't commit processed text/chunks
+data/embeddings/      # Don't commit large vector store files
+
+# Logs
+*.log
+logs/
+
+# Operating System Specific
+.DS_Store             # macOS specific
+Thumbs.db             # Windows specific
+
+# VS Code specific ignores
+.vscode/
+
+# Editor specific ignores
+.flake8
