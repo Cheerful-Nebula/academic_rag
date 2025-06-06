@@ -48,8 +48,10 @@ class RAGPipeline:
 
         # Prepare context (keep it shorter for local models)
         context = "\n".join([
-            f"Source {i+1}: {doc['content'][:300]}..."  # Truncate for efficiency
-            for i, doc in enumerate(context_docs[:3])  # Use top 3 docs only
+            f"Source {i+1}: {doc['content']}" if len(doc['content']) <= 500
+            else f"Source {i+1}: {doc['content'][:500]}..."  # Truncate for efficiency
+
+            for i, doc in enumerate(context_docs[:5])  # Use top 5 docs only
         ])
 
         # Create a focused prompt

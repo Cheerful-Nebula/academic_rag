@@ -1,9 +1,7 @@
 import chromadb
-from chromadb.config import Settings
+from chromadb.config import Settings  # noqa
 from sentence_transformers import SentenceTransformer
-from typing import List, Dict
-from .config import Config
-import os
+from config import Config
 
 
 class VectorStore:
@@ -20,7 +18,7 @@ class VectorStore:
             metadata={"description": "Academic research papers collection"}
         )
 
-    def add_documents(self, documents: List[Dict]) -> None:
+    def add_documents(self, documents: list[dict]) -> None:
         """Add documents to vector store"""
         texts = [doc["content"] for doc in documents]
         metadatas = [doc["metadata"] for doc in documents]
@@ -29,7 +27,7 @@ class VectorStore:
         embeddings = self.embedding_model.encode(texts).tolist()
 
         # Generate IDs
-        ids = [f"{doc['metadata']['source']}_{doc['metadata']['chunk_id']}" 
+        ids = [f"{doc['metadata']['source']}_{doc['metadata']['chunk_id']}"
                for doc in documents]
 
         # Add to collection
@@ -40,7 +38,7 @@ class VectorStore:
             ids=ids
         )
 
-    def search(self, query: str, top_k: int = Config.TOP_K_RETRIEVAL) -> List[Dict]:
+    def search(self, query: str, top_k: int = Config.TOP_K_RETRIEVAL) -> list[dict]:
         """Search for relevant documents"""
         # Generate query embedding
         query_embedding = self.embedding_model.encode([query]).tolist()
@@ -64,7 +62,7 @@ class VectorStore:
 
         return formatted_results
 
-    def get_collection_stats(self) -> Dict:
+    def get_collection_stats(self) -> dict:
         """Get statistics about the collection"""
         count = self.collection.count()
         return {

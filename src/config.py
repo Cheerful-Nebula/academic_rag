@@ -10,8 +10,8 @@ class Config:
     CHROMA_PERSIST_DIRECTORY = os.getenv("CHROMA_PERSIST_DIRECTORY", "./vectorstore")
 
     # Document processing settings
-    CHUNK_SIZE = 800  # Smaller chunks for local models
-    CHUNK_OVERLAP = 100
+    CHUNK_SIZE = 1000
+    CHUNK_OVERLAP = 150
 
     # Retrieval settings
     TOP_K_RETRIEVAL = 3  # Fewer docs for local processing
