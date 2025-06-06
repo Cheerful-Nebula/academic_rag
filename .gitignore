@@ -33,3 +33,4 @@ Thumbs.db             # Windows specific
 
 # Editor specific ignores
 .flake8
+.rag_project_structure-2.md
