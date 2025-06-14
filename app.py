@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from src.document_processor import DocumentProcessor
+from src.SemanticDocumentProcessor import SemanticDocumentProcessor
 from src.vector_store import VectorStore
 from src.rag_pipeline import RAGPipeline
 
@@ -15,7 +15,7 @@ st.set_page_config(
 # Initialize components
 @st.cache_resource
 def init_components():
-    return DocumentProcessor(), VectorStore(), RAGPipeline()
+    return SemanticDocumentProcessor(), VectorStore(), RAGPipeline()
 
 
 processor, vector_store, rag = init_components()
