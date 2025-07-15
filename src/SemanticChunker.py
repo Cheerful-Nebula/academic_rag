@@ -1,11 +1,12 @@
 from sentence_transformers import SentenceTransformer
-from config import Config # noqa
+from .config import Config
 import re
 import spacy
 from typing import Optional
 from dataclasses import dataclass
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import socket
 
 
 @dataclass
@@ -19,14 +20,14 @@ class Chunk:
 
 
 class SemanticChunker:
-    def __init__(self, embedding_model: str = "all-MiniLM-L6-v2"):
+    def __init__(self):
         # Load spaCy model for sentence segmentation
         # Customize spaCy pipeline for efficiency
         self.nlp = spacy.load("en_core_web_sm", exclude=["parser", "ner"])
         self.nlp.enable_pipe("senter")  # Modern sentence boundary detection
 
         # Load embedding model for semantic similarity
-        self.embedding_model = SentenceTransformer(embedding_model)
+        self.embedding_model = self.get_embedding_model()
 
         # Academic paper section patterns
         self.section_patterns = [
@@ -36,11 +37,34 @@ class SemanticChunker:
             r'^[IVX]+\.?\s+(introduction|background|methodology|results|discussion|conclusion)'
         ]
 
-        # Configuration
-        self.min_chunk_size = 100
-        self.max_chunk_size = 1000
-        self.overlap_sentences = 2
-        self.similarity_threshold = 0.7
+        # Configuration/Default values for chunking
+        self.min_chunk_size = Config.MIN_CHUNK_SIZE
+        self.max_chunk_size = Config.MAX_CHUNK_SIZE
+        self.max_sentence_length = Config.MAX_SENTENCE_LENGTH
+        self.max_paragraph_length = Config.MAX_PARAGRAPH_LENGTH
+        self.overlap_sentences = Config.OVERLAP_SENTENCES
+        self.similarity_threshold = Config.SIMILARITY_THRESHOLD
+
+    def internet_up(self, host="huggingface.co", port=443, timeout=2):
+        try:
+            socket.create_connection((host, port), timeout=timeout)
+            return True
+        except OSError:
+            return False
+
+    def get_embedding_model(self) -> SentenceTransformer:
+        if Config.EMBEDDING_MODEL_LOCAL_PATH.exists():
+            return SentenceTransformer(str(Config.EMBEDDING_MODEL_LOCAL_PATH))
+        elif self.internet_up():
+            # First run with internet – download then cache locally
+            model_online_name = "sentence-transformers/" + Config.EMBEDDING_MODEL
+            model = SentenceTransformer(model_online_name)
+            model.save(str(Config.EMBEDDING_MODEL_LOCAL_PATH))          # Cache for next time
+            return model
+        raise RuntimeError(
+            "No internet and local model not found at "
+            f"{Config.EMBEDDING_MODEL_LOCAL_PATH}. Please download it first."
+        )
 
     def detect_sections(self, text: str) -> list[tuple[str, int, int]]:
         """Detect academic paper sections and their boundaries."""
