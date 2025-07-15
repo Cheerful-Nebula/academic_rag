@@ -1,7 +1,7 @@
 import chromadb
 from chromadb.config import Settings  # noqa
 from sentence_transformers import SentenceTransformer
-from config import Config
+from .config import Config
 
 
 class VectorStore:
