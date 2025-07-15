@@ -1,7 +1,7 @@
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 import torch # noqa
 from .vector_store import VectorStore
-from .config import Config # noqa
+from .config import Config
 import re
 
 
@@ -9,16 +9,16 @@ class RAGPipeline:
     def __init__(self):
         # Use a smaller, efficient model that runs locally
         # Initialize model, tokenizer, genetor pipeline, and vector store
-        model_name = "google/flan-t5-base"  # "google/flan-t5-base" "microsoft/DialoGPT-medium"
+        model_name = Config.LLM_MODEL
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, use_safetensors=True)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, use_safetensors=True, device_map="auto")
         self.vector_store = VectorStore()
         self.generator = pipeline(
                 "text-generation",
                 model=self.model,
                 tokenizer=self.tokenizer,
                 max_length=512,
-                temperature=0.3,
+                temperature=Config.LLM_TEMPERATURE,
                 pad_token_id=self.tokenizer.eos_token_id
             )
         # --- NEW: Structured Prompt Template ---
@@ -40,14 +40,14 @@ class RAGPipeline:
 
         print("✅ Language model loaded successfully!")
 
-    def format_context(docs: list[dict]) -> str:
+    def format_context(self, docs: list[dict]) -> str:
         context_lines = []
         for i, doc in enumerate(docs):
             metadata = doc['metadata']
 
             # PRESERVE STRUCTURE
-            header = f"SOURCE {i+1} | {metadata['source']}"
-            section = f"SECTION: {metadata['section']}" if 'section' in metadata else ""
+            header = f"📄 SOURCE {i+1} | {metadata.get('source', 'unknown')}"
+            section = f"🔖 SECTION: {metadata.get('section', 'N/A')}"
             chunk_type = f"CHUNK TYPE: {metadata['chunk_type']}"
 
             # SMART TRUNCATION (preserve sentence boundaries)
@@ -129,17 +129,6 @@ class RAGPipeline:
             }
     # --- NEW HELPER METHODS ---
 
-    def _format_context(self, context_docs: list[dict]) -> str:
-        """Formats semantic chunks with metadata for the prompt."""
-        context_lines = []
-        for i, doc in enumerate(context_docs):
-            meta = doc['metadata']
-            header = f"📄 SOURCE {i+1} | {meta.get('source', 'unknown')}"
-            section = f"🔖 SECTION: {meta.get('section', 'N/A')}"
-            content = doc['content'][:500] + "..." if len(doc['content']) > 500 else doc['content']
-            context_lines.append(f"{header}\n{section}\n{content}\n")
-        return "\n".join(context_lines)
-
     def _extract_answer(self, generated_text: str) -> str:
         """Extracts the answer after '[RESPONSE]', or returns full text if marker missing."""
         return (
@@ -180,13 +169,3 @@ class RAGPipeline:
 # that retrieves relevant documents from a vector store and generates a response
 # using a language model. It includes structured context formatting,
 # dynamic prompt construction, and citation-aware postprocessing.
-#             context_lines.append(f"{header}\n{section}\n{chunk_type}\n{content}\n")
-#         return "\n\n".join(context_lines)
-#         """Extracts citations from the answer based on context documents."""
-#         citations = []
-#         for i, doc in enumerate(context_docs):
-#             if f"[{i+1}]" in answer:
-#                 citations.append(doc['metadata']['source'])
-#         return citations
-#         return citations
-#         """Finds indices of citations in the answer text."""
