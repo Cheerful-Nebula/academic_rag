@@ -1,4 +1,4 @@
-from SemanticChunker import SemanticChunker
+from .SemanticChunker import SemanticChunker
 import os
 import pdfplumber
 import re
