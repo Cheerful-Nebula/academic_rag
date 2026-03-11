@@ -2,6 +2,8 @@
 
 A retrieval-augmented generation system for querying academic research papers.
 
+I enjoy self-guided learning, that said I was learning Reinforcement Learning from scratch. Rather than getting lost in Google rabbit holes, I built a local RAG system so I could download arXiv papers and have a conversation with them directly.
+
 ## Features
 - PDF document processing and chunking
 - Vector similarity search using sentence transformers
@@ -19,6 +21,3 @@ A retrieval-augmented generation system for querying academic research papers.
 1. Upload PDF research papers
 2. Ask questions about the content
 3. Get AI-powered answers with source citations
-
-## Demo
-[Add screenshots and demo GIF here]
