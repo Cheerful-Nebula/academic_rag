@@ -1,5 +1,4 @@
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
-import torch # noqa
 from .vector_store import VectorStore
 from .config import Config
 import re
@@ -10,18 +9,20 @@ class RAGPipeline:
         # Use a smaller, efficient model that runs locally
         # Initialize model, tokenizer, genetor pipeline, and vector store
         model_name = Config.LLM_MODEL
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, use_safetensors=True, device_map="auto")
         self.vector_store = VectorStore()
         self.generator = pipeline(
-                "text-generation",
+                "text2text-generation",
                 model=self.model,
                 tokenizer=self.tokenizer,
                 max_length=512,
                 temperature=Config.LLM_TEMPERATURE,
                 pad_token_id=self.tokenizer.eos_token_id
             )
-        # --- NEW: Structured Prompt Template ---
+
+        # ---  Structured Prompt Template ---
         # This template is designed for academic analysis tasks
         self.PROMPT_TEMPLATE = """
         You're an AI research assistant analyzing academic papers. Use the context to answer scientifically.
@@ -37,8 +38,6 @@ class RAGPipeline:
 
         **RESPONSE:**
         """
-
-        print("✅ Language model loaded successfully!")
 
     def format_context(self, docs: list[dict]) -> str:
         context_lines = []

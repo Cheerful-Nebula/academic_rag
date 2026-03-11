@@ -4,29 +4,40 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
-.ipynb_checkpoints/ # For Jupyter notebooks
+.ipynb_checkpoints/ 
 
 # Environment variables
 .env
-.venv/ # If you use venv (though you're using Conda, good to include)
+.venv/ 
 
 # Conda specific ignores
 # For generated Conda environments, usually they are outside the project dir
-# If you have a local env created *inside* the project dir (not recommended), add it here:
-# my_project_env/
+# but if you have them inside, you might want to ignore them
+conda-env/
 
-# Data files (crucial for RAG projects!)
-data/raw/             # Don't commit raw PDFs
-data/processed/       # Don't commit processed text/chunks
-data/embeddings/      # Don't commit large vector store files
+# Downloaded models (pulled at runtime via HuggingFace/Ollama)
+models/
+
+# Data files
+data/raw/             
+data/processed/       
+data/embeddings/    
+
+# Generated vector store (rebuilt on first run)
+vectorstore/
+*.sqlite3
+*.bin
 
 # Logs
 *.log
 logs/
 
 # Operating System Specific
-.DS_Store             # macOS specific
-Thumbs.db             # Windows specific
+## macOS specific
+.DS_Store             
+**/.DS_Store
+## Windows specific
+Thumbs.db             
 
 # VS Code specific ignores
 .vscode/
@@ -34,3 +45,8 @@ Thumbs.db             # Windows specific
 # Editor specific ignores
 .flake8
 .rag_project_structure-2.md
+
+# Personal files
+Notes.docx
+*.docx
+sandbox.ipynb

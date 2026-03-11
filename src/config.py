@@ -1,7 +1,8 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from pathlib import Path
-load_dotenv()
+
+# load_dotenv() # This will load variables from .env into os.environ
 
 
 class Config:
@@ -18,7 +19,7 @@ class Config:
     SIMILARITY_THRESHOLD = 0.7  # Similarity threshold for chunk merging
 
     # Retrieval settings
-    TOP_K_RETRIEVAL = 3  # Fewer docs for local processing
+    TOP_K_RETRIEVAL = 1  # Fewer docs for local processing
 
     # Model settings
     EMBEDDING_MODEL = "all-MiniLM-L6-v2"
